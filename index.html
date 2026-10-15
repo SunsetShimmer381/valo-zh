@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ヴァロ中国語コール帳</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#E9EDF1; --surface:#F7F9FB; --line:#CBD3DC; --ink:#1B2430; --muted:#5B6878;
+  --accent:#0C7F79; --accent-ink:#FFFFFF; --good:#2F8F4E; --bad:#C2413A;
+  --t1:#C9473D; --t2:#C17A12; --t3:#2F8F4E; --t4:#2E6AC0; --t0:#7D8896;
+  --hanzi:"Noto Serif SC","Songti SC","SimSun",serif;
+  --ui:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic","Noto Sans JP",system-ui,sans-serif;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#141A22; --surface:#1D2530; --line:#2F3A48; --ink:#E6EBF1; --muted:#97A3B3;
+    --accent:#3CB8AF; --accent-ink:#0B1A19; --good:#5CC27E; --bad:#F07A6F;
+    --t1:#F07A6F; --t2:#E6A94A; --t3:#5CC27E; --t4:#6EA2F0; --t0:#8693A3;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141A22; --surface:#1D2530; --line:#2F3A48; --ink:#E6EBF1; --muted:#97A3B3;
+  --accent:#3CB8AF; --accent-ink:#0B1A19; --good:#5CC27E; --bad:#F07A6F;
+  --t1:#F07A6F; --t2:#E6A94A; --t3:#5CC27E; --t4:#6EA2F0; --t0:#8693A3;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 110px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ui);font-size:16px;line-height:1.6;-webkit-text-size-adjust:100%}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+[lang="zh-CN"]{font-family:var(--hanzi)}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px 48px}
+
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+.bar{max-width:720px;margin:0 auto;padding:10px 16px 0;display:flex;align-items:center;gap:12px}
+.bar h1{font-size:17px;margin:0;font-weight:700;flex:1;letter-spacing:.02em}
+.bar h1 span{font-family:var(--hanzi);color:var(--accent);margin-left:6px;font-size:15px}
+.speed{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;font-size:13px}
+.speed button{border:0;background:none;padding:4px 10px}
+.speed button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+nav{max-width:720px;margin:0 auto;display:flex;padding:0 8px}
+nav button{flex:1;border:0;background:none;padding:10px 4px 9px;font-size:14px;color:var(--muted);border-bottom:3px solid transparent}
+nav button[aria-selected="true"]{color:var(--ink);font-weight:700;border-bottom-color:var(--accent)}
+
+/* hero: one phrase, big */
+.hero{padding:28px 0 20px;border-bottom:1px solid var(--line);margin-bottom:8px}
+.hero .ja{color:var(--muted);font-size:14px;margin:0 0 6px}
+.hero .zh{font-size:clamp(44px,13vw,76px);line-height:1.1;margin:0;font-weight:700;word-break:keep-all}
+.hero .py{font-size:22px;margin:8px 0 2px;font-weight:500}
+.hero .kana{color:var(--muted);font-size:14px;margin:0}
+.hero .row{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:9px 14px;font-size:15px}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:700}
+.tones{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:14px}
+.tones b{font-weight:700}
+
+.t1{color:var(--t1)}.t2{color:var(--t2)}.t3{color:var(--t3)}.t4{color:var(--t4)}.t0{color:var(--t0)}
+
+/* vocab */
+.tools{display:flex;flex-direction:column;gap:10px;padding:14px 0 6px}
+.search{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);font:inherit}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch}
+.chip{flex:none;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 12px;font-size:13px}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.count{font-size:13px;color:var(--muted)}
+.list{list-style:none;margin:0;padding:0}
+.item{display:grid;grid-template-columns:1fr auto;gap:4px 12px;padding:14px 2px;border-bottom:1px solid var(--line);align-items:center}
+.item .zh{font-size:28px;line-height:1.2;font-weight:700}
+.item .py{font-size:15px;font-weight:500}
+.item .kana{font-size:12px;color:var(--muted);margin-left:8px}
+.item .ja{font-size:15px}
+.item .note{font-size:12px;color:var(--muted)}
+.item .acts{grid-row:1/span 3;grid-column:2;display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+.play{width:44px;height:44px;border-radius:50%;border:0;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center}
+.play svg{width:18px;height:18px}
+.known{border:1px solid var(--line);background:none;border-radius:8px;font-size:12px;padding:3px 8px;color:var(--muted)}
+.known[aria-pressed="true"]{color:var(--good);border-color:var(--good);font-weight:700}
+.item.is-known .zh{opacity:.55}
+.empty{padding:28px 0;color:var(--muted)}
+
+/* builder */
+.sec h2{font-size:19px;margin:22px 0 4px}
+.sec p.lead{color:var(--muted);font-size:14px;margin:0 0 14px}
+.pick{margin:14px 0}
+.pick h3{font-size:13px;color:var(--muted);margin:0 0 6px;font-weight:500}
+.pick .chips{flex-wrap:wrap;overflow:visible}
+.pick .chip{font-size:15px;padding:6px 12px}
+.pick .chip [lang="zh-CN"]{margin-right:4px}
+.out{margin-top:20px;padding:18px;border-radius:14px;background:var(--surface);border:1px solid var(--line)}
+.out .zh{font-size:clamp(30px,9vw,44px);font-weight:700;line-height:1.2}
+.out .py{font-size:18px;margin-top:6px}
+.out .ja{color:var(--muted);margin-top:4px}
+
+/* quiz */
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+.mode{text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:14px}
+.mode strong{display:block;font-size:16px}
+.mode span{font-size:13px;color:var(--muted)}
+.qhead{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin:18px 0 8px}
+.progress{height:4px;background:var(--line);border-radius:4px;overflow:hidden;margin-bottom:18px}
+.progress i{display:block;height:100%;background:var(--accent);transition:width .25s}
+.prompt{font-size:24px;font-weight:700;margin:0 0 4px}
+.prompt.zhq{font-size:40px}
+.sub{color:var(--muted);font-size:14px;margin:0 0 16px}
+.opts{display:grid;gap:8px}
+.opt{text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:12px 14px;font-size:17px}
+.opt [lang="zh-CN"]{font-size:24px;font-weight:700}
+.opt.right{border-color:var(--good);box-shadow:inset 0 0 0 1px var(--good)}
+.opt.wrong{border-color:var(--bad);box-shadow:inset 0 0 0 1px var(--bad);opacity:.8}
+.feedback{margin-top:14px;padding:12px 14px;border-left:4px solid var(--accent);background:var(--surface);border-radius:4px}
+.feedback .zh{font-size:24px;font-weight:700}
+.result{text-align:center;padding:30px 0}
+.result .big{font-size:56px;font-weight:700;line-height:1}
+.result p{color:var(--muted)}
+
+/* guide */
+.guide h2{font-size:19px;margin:26px 0 8px}
+.guide p,.guide li{font-size:15px}
+.guide ul{padding-left:1.2em;margin:8px 0}
+.guide li{margin:6px 0}
+.example{margin:10px 0;padding:12px 14px;background:var(--surface);border:1px solid var(--line);border-radius:10px;display:flex;align-items:center;gap:12px}
+.example .zh{font-size:22px;font-weight:700}
+.example .meta{flex:1}
+.example .ja{font-size:13px;color:var(--muted)}
+.roles{width:100%;border-collapse:collapse;font-size:14px}
+.roles td{padding:9px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+.roles td:first-child{white-space:nowrap}
+.roles .zh{font-size:18px;font-weight:700;display:block}
+.tablewrap{overflow-x:auto}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:10px;font-size:13px;display:none;max-width:90vw}
+[hidden]{display:none!important}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <div class="bar">
+    <h1>ヴァロ中国語コール帳<span lang="zh-CN">无畏契约</span></h1>
+    <div class="speed" role="group" aria-label="読み上げ速度">
+      <button data-rate="1" aria-pressed="true">普通</button>
+      <button data-rate="0.65" aria-pressed="false">ゆっくり</button>
+    </div>
+  </div>
+  <nav role="tablist">
+    <button role="tab" data-tab="vocab" aria-selected="true">単語帳</button>
+    <button role="tab" data-tab="build" aria-selected="false">文を作る</button>
+    <button role="tab" data-tab="quiz" aria-selected="false">クイズ</button>
+    <button role="tab" data-tab="guide" aria-selected="false">ガイド</button>
+  </nav>
+</header>
+
+<main class="wrap">
+  <!-- VOCAB -->
+  <section id="tab-vocab">
+    <div class="hero" id="hero"></div>
+    <div class="tools">
+      <input class="search" id="search" type="search" placeholder="日本語・中国語・ピンインで検索" aria-label="検索">
+      <div class="chips" id="cats"></div>
+      <div class="count" id="count"></div>
+    </div>
+    <ul class="list" id="list"></ul>
+  </section>
+
+  <!-- BUILDER -->
+  <section id="tab-build" class="sec" hidden>
+    <h2>報告を組み立てる</h2>
+    <p class="lead">ボイスチャットの基本は「人数 → 場所 → 状態」。選ぶと中国語の報告文ができます。</p>
+    <div class="pick"><h3>人数</h3><div class="chips" id="b-num"></div></div>
+    <div class="pick"><h3>場所</h3><div class="chips" id="b-loc"></div></div>
+    <div class="pick"><h3>状態（任意）</h3><div class="chips" id="b-state"></div></div>
+    <div class="out" id="b-out"></div>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="tab-quiz" class="sec" hidden>
+    <div id="quiz"></div>
+  </section>
+
+  <!-- GUIDE -->
+  <section id="tab-guide" class="guide" hidden>
+    <h2>発音のいちばん大事なところ</h2>
+    <p>中国語は音の高さの動き（声調）で意味が変わります。このアプリではピンインを声調ごとに色分けしています。</p>
+    <div class="tablewrap"><table class="roles">
+      <tr><td><b class="t1">第1声</b> mā</td><td>高く平らにのばす。「あー」と歌うように</td></tr>
+      <tr><td><b class="t2">第2声</b> má</td><td>下から上へ。「えっ？」と聞き返す感じ</td></tr>
+      <tr><td><b class="t3">第3声</b> mǎ</td><td>低く押さえる。会話では低いまま短く終わることが多い</td></tr>
+      <tr><td><b class="t4">第4声</b> mà</td><td>上から一気に下げる。「あっ！」と気づいた感じ</td></tr>
+      <tr><td><b class="t0">軽声</b> ma</td><td>軽く短く。前の音に添えるだけ</td></tr>
+    </table></div>
+    <ul>
+      <li>カタカナは目安です。必ず再生ボタンで実際の音を聞いてください。</li>
+      <li>c・ch・q・k・p・t は息を強く出す音です。「残血 cán xuè」の c は「ツァ」と息を吐きながら。</li>
+      <li>ゲーム中は声調が多少ずれても、短くはっきり言えば通じます。まずは大きな声で言い切ることを優先しましょう。</li>
+    </ul>
+
+    <h2>報告の型</h2>
+    <p>中国語圏のプレイヤーの報告はとても短いです。「人数＋在＋場所」が基本形。</p>
+    <div id="g-examples"></div>
+
+    <h2>4つのロール</h2>
+    <div class="tablewrap"><table class="roles" id="g-roles"></table></div>
+
+    <h2>初心者がまず意識すること</h2>
+    <ul>
+      <li><b>照準は頭の高さに置いておく。</b>中国語では「准星 <span class="t3">zhǔn</span> <span class="t1">xīng</span>」。角を曲がる前から、敵の頭が出てきそうな位置に合わせます。</li>
+      <li><b>撃つときは止まる。</b>走りながら撃つと弾がばらけます。「急停 <span class="t2">jí</span> <span class="t2">tíng</span>」はよく聞く言葉です。</li>
+      <li><b>1人で突っ込まない。</b>味方の近くで戦えば、倒されても「补枪（カバー）」してもらえます。</li>
+      <li><b>やられたら情報だけ短く。</b>敵の人数・場所・残りHPを言ったら、あとは静かに。生きている味方の音を邪魔しないのがマナーです。</li>
+      <li><b>お金はチームで合わせる。</b>負けたラウンドは全員で「全起（フルバイ）」するか「经济局（エコ）」で貯めるか揃えます。迷ったら「这把起吗？（このラウンド買う？）」と聞けばOK。</li>
+    </ul>
+    <div id="g-ask"></div>
+  </section>
+</main>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+const CATS = {
+  info:"情報", action:"作戦", spike:"スパイク", skill:"スキル",
+  eco:"経済", weapon:"武器", place:"場所", chat:"あいさつ"
+};
+const W = [
+ // zh, py, kana, ja, cat, note
+ ["敌人","dí rén","ディー レン","敵","info"],
+ ["一个","yí ge","イー ガ","1人","info","「一」は後ろが第4声なので第2声で読む"],
+ ["两个","liǎng ge","リャン ガ","2人","info","人数の「2」は「二」ではなく「两」"],
+ ["三个","sān ge","サン ガ","3人","info"],
+ ["没人","méi rén","メイ レン","誰もいない","info"],
+ ["残血","cán xuè","ツァン シュエ","瀕死（HPがほぼない）","info"],
+ ["打了八十","dǎ le bā shí","ダー ラ バー シー","80ダメージ入れた","info","数字を入れ替えて使う"],
+ ["没打中","méi dǎ zhòng","メイ ダー ジョン","当たってない","info"],
+ ["我死了","wǒ sǐ le","ウォ スー ラ","やられた","info"],
+ ["杀了一个","shā le yí ge","シャー ラ イー ガ","1人倒した","info"],
+ ["有脚步","yǒu jiǎo bù","ヨウ ジャオ ブー","足音がする","info"],
+ ["往B走了","wǎng B zǒu le","ワン ビー ゾウ ラ","Bに向かった","info"],
+ ["绕后","rào hòu","ラオ ホウ","裏取り（後ろに回り込む）","info"],
+ ["有大狙","yǒu dà jū","ヨウ ダー ジュー","オペレーターがいる","info"],
+ ["进点","jìn diǎn","ジン ディエン","サイトに入る","action"],
+ ["一起冲","yì qǐ chōng","イー チー チョン","一緒に突っ込もう","action"],
+ ["等一下","děng yí xià","ダン イー シャー","ちょっと待って","action"],
+ ["别冲","bié chōng","ビエ チョン","突っ込まないで","action"],
+ ["回防","huí fáng","ホイ ファン","戻って守る（リテイク）","action"],
+ ["转点","zhuǎn diǎn","ジュアン ディエン","別のサイトへ移動（ローテ）","action"],
+ ["架枪","jià qiāng","ジャー チャン","角を見て待つ（ホールド）","action"],
+ ["补枪","bǔ qiāng","ブー チャン","カバーして撃つ（トレード）","action"],
+ ["跟我","gēn wǒ","ゲン ウォ","ついてきて","action"],
+ ["我来","wǒ lái","ウォ ライ","任せて","action"],
+ ["看中路","kàn zhōng lù","カン ジョン ルー","ミッドを見て","action"],
+ ["下包","xià bāo","シャー バオ","スパイクを設置する","spike","「包」＝スパイク"],
+ ["包在A","bāo zài A","バオ ザイ エー","スパイクはAにある","spike"],
+ ["拆包","chāi bāo","チャイ バオ","スパイクを解除する","spike"],
+ ["假拆","jiǎ chāi","ジャー チャイ","フェイク解除","spike"],
+ ["在拆","zài chāi","ザイ チャイ","（敵が）解除中","spike"],
+ ["捡包","jiǎn bāo","ジエン バオ","スパイクを拾って","spike"],
+ ["闪光","shǎn guāng","シャン グアン","フラッシュ","skill"],
+ ["我被闪了","wǒ bèi shǎn le","ウォ ベイ シャン ラ","フラッシュ食らった","skill"],
+ ["下烟","xià yān","シャー イエン","スモークを焚く","skill"],
+ ["技能","jì néng","ジー ノン","スキル","skill"],
+ ["大招","dà zhāo","ダー ジャオ","アルティメット","skill"],
+ ["大招好了","dà zhāo hǎo le","ダー ジャオ ハオ ラ","ウルトが溜まった","skill"],
+ ["全起","quán qǐ","チュエン チー","フルバイ","eco"],
+ ["强起","qiáng qǐ","チャン チー","フォースバイ","eco"],
+ ["经济局","jīng jì jú","ジン ジー ジュー","エコラウンド","eco"],
+ ["没钱","méi qián","メイ チエン","お金がない","eco"],
+ ["给我一把枪","gěi wǒ yì bǎ qiāng","ゲイ ウォ イー バー チャン","武器ちょうだい","eco"],
+ ["暴徒","bào tú","バオ トゥー","ヴァンダル","weapon","中国版の名前。英語名で呼ぶ人も多い"],
+ ["幻影","huàn yǐng","ホアン イン","ファントム","weapon"],
+ ["冥驹","míng jū","ミン ジュー","オペレーター","weapon"],
+ ["大狙","dà jū","ダー ジュー","スナイパー（主にオペ）の通称","weapon"],
+ ["警长","jǐng zhǎng","ジン ジャン","シェリフ","weapon"],
+ ["鬼魅","guǐ mèi","グイ メイ","ゴースト","weapon"],
+ ["骇灵","hài líng","ハイ リン","スペクター","weapon"],
+ ["判官","pàn guān","パン グアン","ジャッジ","weapon"],
+ ["A点","A diǎn","エー ディエン","Aサイト","place"],
+ ["B点","B diǎn","ビー ディエン","Bサイト","place"],
+ ["中路","zhōng lù","ジョン ルー","ミッド","place"],
+ ["包点","bāo diǎn","バオ ディエン","設置エリア","place"],
+ ["高台","gāo tái","ガオ タイ","高所","place"],
+ ["拐角","guǎi jiǎo","グアイ ジャオ","角","place"],
+ ["箱子","xiāng zi","シャン ズ","箱","place"],
+ ["门口","mén kǒu","メン コウ","入口","place"],
+ ["后面","hòu miàn","ホウ ミエン","後ろ","place"],
+ ["出生点","chū shēng diǎn","チュー シェン ディエン","スポーン地点","place"],
+ ["你好","nǐ hǎo","ニー ハオ","こんにちは","chat","続けて言うと「ní hǎo」に近くなる"],
+ ["好的","hǎo de","ハオ ダ","了解","chat"],
+ ["漂亮","piào liang","ピャオ リャン","ナイス！","chat"],
+ ["打得好","dǎ de hǎo","ダー ダ ハオ","うまい！","chat"],
+ ["没事","méi shì","メイ シー","大丈夫、気にしないで","chat"],
+ ["不好意思","bù hǎo yì si","ブー ハオ イー スー","ごめん","chat"],
+ ["谢谢","xiè xie","シエ シエ","ありがとう","chat"],
+ ["加油","jiā yóu","ジャー ヨウ","頑張ろう","chat"]
+].map(([zh,py,kana,ja,cat,note])=>({zh,py,kana,ja,cat,note:note||""}));
+
+const $ = s => document.querySelector(s);
+const esc = s => s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const PLAY = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3 9v6h4l5 4V5L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/></svg>';
+
+function tone(s){
+  for(const ch of s){
+    if("āēīōūǖ".includes(ch))return 1;
+    if("áéíóúǘ".includes(ch))return 2;
+    if("ǎěǐǒǔǚ".includes(ch))return 3;
+    if("àèìòùǜ".includes(ch))return 4;
+  }
+  return 0;
+}
+const pyHTML = py => py.split(" ").map(s=>`<span class="t${tone(s)}">${esc(s)}</span>`).join(" ");
+
+/* storage */
+const store = {
+  get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},
+  set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+};
+let known = new Set(store.get("vzh-known",[]));
+let rate = store.get("vzh-rate",1);
+
+/* speech */
+let zhVoice = null;
+function pickVoice(){
+  if(!("speechSynthesis" in window))return;
+  const vs = speechSynthesis.getVoices();
+  zhVoice = vs.find(v=>/zh[-_]CN/i.test(v.lang)) || vs.find(v=>/^zh/i.test(v.lang)) || null;
+}
+if("speechSynthesis" in window){pickVoice();speechSynthesis.onvoiceschanged=pickVoice;}
+function toast(msg){const t=$("#toast");t.textContent=msg;t.style.display="block";clearTimeout(toast.h);toast.h=setTimeout(()=>t.style.display="none",2600);}
+function speak(text){
+  if(!("speechSynthesis" in window)){toast("このブラウザは読み上げに対応していません");return;}
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text.replace(/A/g,"诶").replace(/B/g,"币"));
+  u.lang="zh-CN"; u.rate=rate; if(zhVoice)u.voice=zhVoice;
+  speechSynthesis.speak(u);
+  if(!zhVoice && speechSynthesis.getVoices().length) toast("中国語の音声が見つかりません。端末の設定で中国語（普通話）の音声を追加してください");
+}
+document.querySelectorAll(".speed button").forEach(b=>{
+  b.setAttribute("aria-pressed", String(Number(b.dataset.rate)===rate));
+  b.onclick=()=>{rate=Number(b.dataset.rate);store.set("vzh-rate",rate);
+    document.querySelectorAll(".speed button").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));};
+});
+
+/* tabs */
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll("nav button").forEach(x=>x.setAttribute("aria-selected",String(x===b)));
+  ["vocab","build","quiz","guide"].forEach(t=>$("#tab-"+t).hidden = t!==b.dataset.tab);
+  window.scrollTo(0,0);
+});
+
+/* hero */
+function renderHero(){
+  const pool = W.filter(w=>["info","action","spike"].includes(w.cat));
+  const w = pool[Math.floor(Math.random()*pool.length)];
+  $("#hero").innerHTML = `
+    <p class="ja">${esc(w.ja)}</p>
+    <p class="zh" lang="zh-CN">${esc(w.zh)}</p>
+    <p class="py">${pyHTML(w.py)}</p>
+    <p class="kana">${esc(w.kana)}</p>
+    <div class="row">
+      <button class="btn primary" id="hero-play">再生する</button>
+      <button class="btn" id="hero-next">別のフレーズ</button>
+    </div>
+    <div class="tones"><b class="t1">第1声 ¯</b><b class="t2">第2声 ˊ</b><b class="t3">第3声 ˇ</b><b class="t4">第4声 ˋ</b><b class="t0">軽声</b></div>`;
+  $("#hero-play").onclick=()=>speak(w.zh);
+  $("#hero-next").onclick=renderHero;
+}
+
+/* vocab list */
+let cat="all", q="";
+function renderCats(){
+  const items=[["all","すべて"],...Object.entries(CATS),["known","覚えた"]];
+  $("#cats").innerHTML = items.map(([k,v])=>`<button class="chip" data-c="${k}" aria-pressed="${k===cat}">${v}</button>`).join("");
+  $("#cats").querySelectorAll(".chip").forEach(b=>b.onclick=()=>{cat=b.dataset.c;renderCats();renderList();});
+}
+function renderList(){
+  const norm = s=>s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\s/g,"").toLowerCase();
+  const nq = norm(q);
+  const rows = W.filter(w=>{
+    if(cat==="known" && !known.has(w.zh))return false;
+    if(cat!=="all" && cat!=="known" && w.cat!==cat)return false;
+    if(!nq)return true;
+    return [w.zh,w.ja,w.kana,w.py].some(f=>norm(f).includes(nq));
+  });
+  $("#count").textContent = `${rows.length} 件 ・ 覚えた ${known.size} / ${W.length}`;
+  if(!rows.length){$("#list").innerHTML=`<li class="empty">${cat==="known"?"「覚えた」を押した言葉がここに並びます。":"見つかりませんでした。別の言葉で検索してください。"}</li>`;return;}
+  $("#list").innerHTML = rows.map(w=>{
+    const k=known.has(w.zh);
+    return `<li class="item${k?" is-known":""}">
+      <div><span class="zh" lang="zh-CN">${esc(w.zh)}</span></div>
+      <div><span class="py">${pyHTML(w.py)}</span><span class="kana">${esc(w.kana)}</span></div>
+      <div><div class="ja">${esc(w.ja)}</div>${w.note?`<div class="note">${esc(w.note)}</div>`:""}</div>
+      <div class="acts">
+        <button class="play" data-say="${esc(w.zh)}" aria-label="${esc(w.zh)}を再生">${PLAY}</button>
+        <button class="known" data-k="${esc(w.zh)}" aria-pressed="${k}">${k?"覚えた ✓":"覚えた"}</button>
+      </div></li>`;
+  }).join("");
+  $("#list").querySelectorAll("[data-say]").forEach(b=>b.onclick=()=>speak(b.dataset.say));
+  $("#list").querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{
+    const z=b.dataset.k; known.has(z)?known.delete(z):known.add(z);
+    store.set("vzh-known",[...known]); renderList();
+  });
+}
+$("#search").addEventListener("input",e=>{q=e.target.value;renderList();});
+
+/* builder */
+const B = {
+  num:[{zh:"一个",py:"yí ge",ja:"1人"},{zh:"两个",py:"liǎng ge",ja:"2人"},{zh:"三个",py:"sān ge",ja:"3人"},{zh:"全部",py:"quán bù",ja:"全員"},{zh:"没人",py:"méi rén",ja:"誰もいない"}],
+  loc:[{zh:"A点",py:"A diǎn",ja:"Aサイト"},{zh:"B点",py:"B diǎn",ja:"Bサイト"},{zh:"中路",py:"zhōng lù",ja:"ミッド"},{zh:"包点",py:"bāo diǎn",ja:"設置エリア"},{zh:"高台",py:"gāo tái",ja:"高所"},{zh:"后面",py:"hòu miàn",ja:"後ろ"}],
+  state:[{zh:"",py:"",ja:"なし"},{zh:"残血",py:"cán xuè",ja:"瀕死"},{zh:"在下包",py:"zài xià bāo",ja:"設置中"},{zh:"在拆",py:"zài chāi",ja:"解除中"},{zh:"有大狙",py:"yǒu dà jū",ja:"オペあり"},{zh:"往后撤了",py:"wǎng hòu chè le",ja:"下がった"}]
+};
+const sel={num:1,loc:0,state:1};
+function renderBuilder(){
+  for(const k of ["num","loc","state"]){
+    const el=$("#b-"+k);
+    el.innerHTML=B[k].map((o,i)=>`<button class="chip" data-i="${i}" aria-pressed="${i===sel[k]}">${o.zh?`<span lang="zh-CN">${esc(o.zh)}</span>`:""}${esc(o.ja)}</button>`).join("");
+    el.querySelectorAll(".chip").forEach(b=>b.onclick=()=>{sel[k]=Number(b.dataset.i);renderBuilder();});
+  }
+  const n=B.num[sel.num], l=B.loc[sel.loc], s=B.state[sel.state];
+  let zh,py,ja;
+  if(n.zh==="没人"){zh=l.zh+"没人";py=l.py+" méi rén";ja=l.ja+"には誰もいない";}
+  else{zh=n.zh+"在"+l.zh;py=n.py+" zài "+l.py;ja=l.ja+"に"+n.ja;}
+  if(s.zh){zh+="，"+s.zh;py+=" "+s.py;ja+="、"+s.ja;}
+  zh+="！";
+  $("#b-out").innerHTML=`<div class="zh" lang="zh-CN">${esc(zh)}</div><div class="py">${pyHTML(py)}</div><div class="ja">${esc(ja)}</div>
+    <div class="row" style="display:flex;gap:10px;margin-top:14px"><button class="btn primary" id="b-play">再生する</button></div>`;
+  $("#b-play").onclick=()=>speak(zh);
+}
+
+/* quiz */
+const QN=10;
+let Q=null;
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function quizHome(){
+  const best=store.get("vzh-best",{});
+  $("#quiz").innerHTML=`<h2>クイズ</h2><p class="lead">1回${QN}問。間違えた言葉は単語帳でもう一度聞いてみましょう。</p>
+   <div class="modes">
+    <button class="mode" data-m="read"><strong>意味から選ぶ</strong><span>日本語を見て中国語を選ぶ${best.read!=null?`<br>ベスト ${best.read}/${QN}`:""}</span></button>
+    <button class="mode" data-m="listen"><strong>聞いて選ぶ</strong><span>音声を聞いて意味を選ぶ${best.listen!=null?`<br>ベスト ${best.listen}/${QN}`:""}</span></button>
+   </div>`;
+  $("#quiz").querySelectorAll(".mode").forEach(b=>b.onclick=()=>startQuiz(b.dataset.m));
+}
+function startQuiz(mode){
+  const qs=shuffle(W).slice(0,QN).map(w=>{
+    const same=shuffle(W.filter(x=>x!==w&&x.cat===w.cat));
+    const other=shuffle(W.filter(x=>x!==w&&x.cat!==w.cat));
+    const opts=shuffle([w,...same.concat(other).slice(0,3)]);
+    return {w,opts};
+  });
+  Q={mode,qs,i:0,score:0,answered:false};
+  renderQ();
+}
+function renderQ(){
+  const {mode,qs,i}=Q, {w,opts}=qs[i];
+  const listen=mode==="listen";
+  $("#quiz").innerHTML=`
+   <div class="qhead"><span>${i+1} / ${QN}</span><span>正解 ${Q.score}</span></div>
+   <div class="progress"><i style="width:${i/QN*100}%"></i></div>
+   ${listen?`<p class="prompt">何と言っている？</p><p class="sub">もう一度聞くときはボタンを押してください。</p>
+     <button class="btn primary" id="q-play" style="margin-bottom:16px">もう一度再生</button>`
+    :`<p class="prompt">${esc(w.ja)}</p><p class="sub">中国語で何と言う？</p>`}
+   <div class="opts">${opts.map((o,k)=>`<button class="opt" data-k="${k}">${listen?esc(o.ja):`<span lang="zh-CN">${esc(o.zh)}</span>`}</button>`).join("")}</div>
+   <div id="q-fb"></div>`;
+  Q.answered=false;
+  if(listen){speak(w.zh);$("#q-play").onclick=()=>speak(w.zh);}
+  $("#quiz").querySelectorAll(".opt").forEach(b=>b.onclick=()=>answer(Number(b.dataset.k)));
+}
+function answer(k){
+  if(Q.answered)return; Q.answered=true;
+  const {w,opts}=Q.qs[Q.i]; const ok=opts[k]===w;
+  if(ok)Q.score++;
+  $("#quiz").querySelectorAll(".opt").forEach((b,j)=>{
+    if(opts[j]===w)b.classList.add("right"); else if(j===k)b.classList.add("wrong");
+  });
+  $("#q-fb").innerHTML=`<div class="feedback">
+    <div>${ok?"正解！":"正解はこちら"}</div>
+    <div class="zh" lang="zh-CN">${esc(w.zh)}</div>
+    <div>${pyHTML(w.py)} <span style="color:var(--muted);font-size:13px">${esc(w.kana)}</span></div>
+    <div>${esc(w.ja)}</div>
+    <div style="display:flex;gap:10px;margin-top:10px">
+      <button class="btn" id="fb-play">再生</button>
+      <button class="btn primary" id="fb-next">${Q.i+1<QN?"次の問題":"結果を見る"}</button>
+    </div></div>`;
+  $("#fb-play").onclick=()=>speak(w.zh);
+  $("#fb-next").onclick=()=>{Q.i++; Q.i<QN?renderQ():quizEnd();};
+  if(Q.mode==="read")speak(w.zh);
+}
+function quizEnd(){
+  const best=store.get("vzh-best",{});
+  const isBest=best[Q.mode]==null||Q.score>best[Q.mode];
+  if(isBest){best[Q.mode]=Q.score;store.set("vzh-best",best);}
+  const msg = Q.score>=9?"<span lang=\"zh-CN\">漂亮！</span> もう実戦で使えます":Q.score>=6?"<span lang=\"zh-CN\">打得好！</span> あと少し":"<span lang=\"zh-CN\">没事，加油！</span> 単語帳で聞き直してみましょう";
+  $("#quiz").innerHTML=`<div class="result"><div class="big">${Q.score}<span style="font-size:24px"> / ${QN}</span></div>
+    <p>${msg}${isBest?"<br>自己ベスト更新":""}</p>
+    <div style="display:flex;gap:10px;justify-content:center">
+      <button class="btn primary" id="r-again">もう一度</button><button class="btn" id="r-home">モードを選ぶ</button></div></div>`;
+  $("#r-again").onclick=()=>startQuiz(Q.mode);
+  $("#r-home").onclick=quizHome;
+}
+
+/* guide */
+function ex(zh,py,ja){return `<div class="example"><div class="meta"><div class="zh" lang="zh-CN">${esc(zh)}</div><div>${pyHTML(py)}</div><div class="ja">${esc(ja)}</div></div><button class="play" data-say="${esc(zh)}" aria-label="再生">${PLAY}</button></div>`;}
+$("#g-examples").innerHTML =
+  ex("两个在A点，一个残血","liǎng ge zài A diǎn yí ge cán xuè","Aサイトに2人、1人瀕死")+
+  ex("中路没人","zhōng lù méi rén","ミッドには誰もいない")+
+  ex("包在B，回防！","bāo zài B huí fáng","スパイクはB、戻って！");
+$("#g-ask").innerHTML = ex("这把起吗？","zhè bǎ qǐ ma","このラウンド買う？");
+const roles=[
+ ["决斗者","jué dòu zhě","デュエリスト","先頭で撃ち合って道を開ける役"],
+ ["先锋","xiān fēng","イニシエーター","索敵やフラッシュで味方の突入を助ける役"],
+ ["控场者","kòng chǎng zhě","コントローラー","スモークで視界を切って陣地を作る役"],
+ ["哨卫","shào wèi","センチネル","罠や回復で守りと裏取り対策をする役"]
+];
+$("#g-roles").innerHTML = roles.map(r=>`<tr><td><span class="zh" lang="zh-CN">${r[0]}</span>${pyHTML(r[1])}</td><td><b>${r[2]}</b><br>${r[3]}</td><td><button class="play" data-say="${r[0]}" aria-label="再生">${PLAY}</button></td></tr>`).join("");
+document.querySelectorAll("#tab-guide [data-say]").forEach(b=>b.onclick=()=>speak(b.dataset.say));
+
+renderHero(); renderCats(); renderList(); renderBuilder(); quizHome();
+</script>
+</body>
+</html>
